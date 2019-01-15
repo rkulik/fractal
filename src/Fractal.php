@@ -12,6 +12,7 @@ use League\Fractal\TransformerAbstract;
 
 /**
  * Class Fractal
+ *
  * @package Rkulik\Fractal
  *
  * @author René Kulik <rene@kulik.io>
@@ -40,6 +41,7 @@ class Fractal
 
     /**
      * Fractal constructor.
+     *
      * @param Manager $manager
      */
     public function __construct(Manager $manager)
@@ -51,6 +53,7 @@ class Fractal
      * @param mixed $data
      * @param callable|TransformerAbstract $transformer
      * @param string $resourceKey
+     *
      * @return Fractal
      */
     public function item($data = null, $transformer = null, string $resourceKey = null): Fractal
@@ -64,6 +67,7 @@ class Fractal
      * @param mixed $data
      * @param callable|TransformerAbstract $transformer
      * @param string $resourceKey
+     *
      * @return Fractal
      */
     public function collection($data = null, $transformer = null, string $resourceKey = null): Fractal
@@ -75,6 +79,7 @@ class Fractal
 
     /**
      * @param array|string $includes
+     *
      * @return Fractal
      */
     public function parseIncludes($includes): Fractal
@@ -86,6 +91,7 @@ class Fractal
 
     /**
      * @param PaginatorInterface $paginator
+     *
      * @return Fractal
      */
     public function setPaginator(PaginatorInterface $paginator): Fractal
@@ -97,6 +103,7 @@ class Fractal
 
     /**
      * @param array $meta
+     *
      * @return $this
      */
     public function setMeta(array $meta)
@@ -114,6 +121,16 @@ class Fractal
     public function toArray(): array
     {
         return $this->createData()->toArray();
+    }
+
+    /**
+     * @param int $options
+     *
+     * @return string
+     */
+    public function toJson(int $options = 0): string
+    {
+        return $this->createData()->toJson($options);
     }
 
     /**
