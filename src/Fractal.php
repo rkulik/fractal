@@ -51,8 +51,8 @@ class Fractal
 
     /**
      * @param mixed $data
-     * @param callable|TransformerAbstract $transformer
-     * @param string $resourceKey
+     * @param callable|TransformerAbstract|null $transformer
+     * @param string|null $resourceKey
      *
      * @return Fractal
      */
@@ -65,8 +65,8 @@ class Fractal
 
     /**
      * @param mixed $data
-     * @param callable|TransformerAbstract $transformer
-     * @param string $resourceKey
+     * @param callable|TransformerAbstract|null $transformer
+     * @param string|null $resourceKey
      *
      * @return Fractal
      */
@@ -104,9 +104,9 @@ class Fractal
     /**
      * @param array $meta
      *
-     * @return $this
+     * @return Fractal
      */
-    public function setMeta(array $meta)
+    public function setMeta(array $meta): Fractal
     {
         if ($this->resource) {
             $this->resource->setMeta($meta);

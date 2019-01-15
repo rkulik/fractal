@@ -4,6 +4,7 @@ namespace Rkulik\Fractal\Tests;
 
 use Closure;
 use League\Fractal\Manager;
+use League\Fractal\Pagination\PaginatorInterface;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\Scope;
@@ -15,6 +16,8 @@ use Rkulik\Fractal\Fractal;
  * Class FractalTest
  *
  * @package Rkulik\Fractal\Tests
+ *
+ * @author René Kulik <rene@kulik.io>
  */
 final class FractalTest extends TestCase
 {
@@ -24,21 +27,26 @@ final class FractalTest extends TestCase
     private $fractal;
 
     /**
-     * @var Manager
+     * @var Manager|MockObject
      */
     private $manager;
 
-    public function setUp()
+    /**
+     *
+     */
+    public function setUp(): void
     {
         parent::setUp();
 
-        /** @var Manager|MockObject $manager */
         $this->manager = $this->createMock(Manager::class);
 
         $this->fractal = new Fractal($this->manager);
     }
 
-    public function testItemToArray()
+    /**
+     *
+     */
+    public function testItemToArray(): void
     {
         $resource = $this->createMock(\stdClass::class);
         $expected = ['foo'];
@@ -50,7 +58,10 @@ final class FractalTest extends TestCase
         $this->assertSame($expected, $this->fractal->item($resource, $this->createTransformer($resource))->toArray());
     }
 
-    public function testItemToJson()
+    /**
+     *
+     */
+    public function testItemToJson(): void
     {
         $resource = $this->createMock(\stdClass::class);
         $expected = json_encode(['foo']);
@@ -62,7 +73,10 @@ final class FractalTest extends TestCase
         $this->assertSame($expected, $this->fractal->item($resource, $this->createTransformer($resource))->toJson());
     }
 
-    public function testCollectionToArray()
+    /**
+     *
+     */
+    public function testCollectionToArray(): void
     {
         $resources = [$this->createMock(\stdClass::class), $this->createMock(\stdClass::class)];
         $expected = ['foo', 'bar'];
@@ -77,7 +91,10 @@ final class FractalTest extends TestCase
         );
     }
 
-    public function testCollectionToJson()
+    /**
+     *
+     */
+    public function testCollectionToJson(): void
     {
         $resources = [$this->createMock(\stdClass::class), $this->createMock(\stdClass::class)];
         $expected = json_encode(['foo', 'bar']);
@@ -93,11 +110,74 @@ final class FractalTest extends TestCase
     }
 
     /**
-     * @param mixed $resourceData
+     *
+     */
+    public function testItemParsesIncludes(): void
+    {
+        $resource = $this->createMock(\stdClass::class);
+        $expected = ['foo'];
+
+        $this->manager->expects($this->once())
+            ->method('parseIncludes')
+            ->with($this->equalTo('bar'));
+
+        $this->manager->expects($this->once())
+            ->method('createData')
+            ->will($this->returnCallback($this->createCallback(Item::class, 'toArray', $resource, $expected)));
+
+        $this->assertSame(
+            $expected,
+            $this->fractal->item($resource, $this->createTransformer($resource))->parseIncludes('bar')->toArray()
+        );
+    }
+
+    /**
+     *
+     */
+    public function testItemContainsMetaInfo(): void
+    {
+        $resource = $this->createMock(\stdClass::class);
+        $expected = ['foo'];
+
+        $this->manager->expects($this->once())
+            ->method('createData')
+            ->will($this->returnCallback($this->createCallback(Item::class, 'toArray', $resource, $expected)));
+
+        $this->assertSame(
+            $expected,
+            $this->fractal->item($resource, $this->createTransformer($resource))->setMeta(['bar' => 'baz'])->toArray()
+        );
+    }
+
+    /**
+     *
+     */
+    public function testCollectionPaginates(): void
+    {
+        $resources = [$this->createMock(\stdClass::class), $this->createMock(\stdClass::class)];
+        $expected = ['foo', 'bar'];
+
+        /** @var PaginatorInterface|MockObject $paginator */
+        $paginator = $this->createMock(PaginatorInterface::class);
+
+        $this->manager->expects($this->once())
+            ->method('createData')
+            ->will($this->returnCallback($this->createCallback(Collection::class, 'toArray', $resources, $expected)));
+
+        $this->assertSame(
+            $expected,
+            $this->fractal->collection($resources, $this->createTransformer($resources))
+                ->setPaginator($paginator)
+                ->toArray()
+        );
+    }
+
+    /**
+     * @param $resourceData
      *
      * @return Closure
      */
-    private function createTransformer($resourceData)
+    private function createTransformer($resourceData): Closure
     {
         $that = $this;
         return function ($data) use ($that, $resourceData) {
@@ -111,9 +191,9 @@ final class FractalTest extends TestCase
      * @param string $converterMethod
      * @param array|string $expected
      *
-     * @return Scope|MockObject
+     * @return MockObject
      */
-    private function createScope(string $converterMethod, $expected): Scope
+    private function createScope(string $converterMethod, $expected): MockObject
     {
         $scope = $this->createMock(Scope::class);
         $scope->expects($this->once())->method($converterMethod)->will($this->returnValue($expected));
@@ -125,7 +205,7 @@ final class FractalTest extends TestCase
      * @param string $className
      * @param string $converterMethod
      * @param mixed $resourceData
-     * @param $expected
+     * @param array|string $expected
      *
      * @return Closure
      */
@@ -142,8 +222,4 @@ final class FractalTest extends TestCase
             return $scope;
         };
     }
-
-    // testItemParsesIncludes
-    // testItemContainsMetaInfo
-    // testCollectionPaginates
 }
