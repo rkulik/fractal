@@ -2,6 +2,30 @@
 
 Convenience wrapper for fractal.
 
+- [Requirements](#requirements)
+- [Install](#install)
+- [Usage](#usage)
+- [Testing](#testing)
+- [Changelog](#changelog)
+- [Contributing](#contributing)
+- [Security](#security)
+- [Credits](#credits)
+- [License](#license)
+
+## Requirements
+
+This package requires PHP 7.2 or higher.
+
+## Install
+
+Via composer
+
+``` bash
+$ composer require rkulik/fractal
+```
+
+## Usage
+
 ## Testing
 
 ``` bash
