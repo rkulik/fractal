@@ -3,6 +3,7 @@
 namespace Rkulik\Fractal;
 
 use League\Fractal\Manager;
+use League\Fractal\Pagination\CursorInterface;
 use League\Fractal\Pagination\PaginatorInterface;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
@@ -38,6 +39,11 @@ class Fractal
      * @var PaginatorInterface
      */
     private $paginator;
+
+    /**
+     * @var CursorInterface
+     */
+    private $cursor;
 
     /**
      * Fractal constructor.
@@ -102,6 +108,18 @@ class Fractal
     }
 
     /**
+     * @param CursorInterface $cursor
+     *
+     * @return Fractal
+     */
+    public function setCursor(CursorInterface $cursor): Fractal
+    {
+        $this->cursor = $cursor;
+
+        return $this;
+    }
+
+    /**
      * @param array $meta
      *
      * @return Fractal
@@ -140,6 +158,10 @@ class Fractal
     {
         if ($this->includes) {
             $this->manager->parseIncludes($this->includes);
+        }
+
+        if ($this->resource instanceof Collection && $this->cursor) {
+            $this->resource->setCursor($this->cursor);
         }
 
         if ($this->resource instanceof Collection && $this->paginator) {

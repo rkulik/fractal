@@ -4,6 +4,7 @@ namespace Rkulik\Fractal\Tests;
 
 use Closure;
 use League\Fractal\Manager;
+use League\Fractal\Pagination\CursorInterface;
 use League\Fractal\Pagination\PaginatorInterface;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
@@ -152,7 +153,7 @@ final class FractalTest extends TestCase
     /**
      *
      */
-    public function testCollectionPaginates(): void
+    public function testCollectionPaginatesUsingPaginator(): void
     {
         $resources = [$this->createMock(\stdClass::class), $this->createMock(\stdClass::class)];
         $expected = ['foo', 'bar'];
@@ -168,6 +169,29 @@ final class FractalTest extends TestCase
             $expected,
             $this->fractal->collection($resources, $this->createTransformer($resources))
                 ->setPaginator($paginator)
+                ->toArray()
+        );
+    }
+
+    /**
+     *
+     */
+    public function testCollectionPaginatesUsingCursor(): void
+    {
+        $resources = [$this->createMock(\stdClass::class), $this->createMock(\stdClass::class)];
+        $expected = ['foo', 'bar'];
+
+        /** @var CursorInterface|MockObject $cursor */
+        $cursor = $this->createMock(CursorInterface::class);
+
+        $this->manager->expects($this->once())
+            ->method('createData')
+            ->will($this->returnCallback($this->createCallback(Collection::class, 'toArray', $resources, $expected)));
+
+        $this->assertSame(
+            $expected,
+            $this->fractal->collection($resources, $this->createTransformer($resources))
+                ->setCursor($cursor)
                 ->toArray()
         );
     }
