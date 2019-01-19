@@ -1,10 +1,12 @@
 # fractal
 
-Convenience wrapper for Fractal.
+Convenience wrapper for [Fractal](https://fractal.thephpleague.com/).
 
 - [Requirements](#requirements)
 - [Install](#install)
 - [Usage](#usage)
+  - [Item example](#item-example)
+  - [Collection example](#collection-example)
 - [Testing](#testing)
 - [Changelog](#changelog)
 - [Contributing](#contributing)
@@ -26,8 +28,11 @@ $ composer require rkulik/fractal
 
 ## Usage
 
-As this package just wraps Fractal, the basic usage is pretty much identical. The two examples listed below demonstrate
-the workflow. For further information please refer to the [Fractal documentation](https://fractal.thephpleague.com/).
+As this package wraps Fractal, the basic usage is pretty much identical. The two examples listed below demonstrate the
+workflow. For further information please refer to the [Fractal documentation](https://fractal.thephpleague.com/).
+
+- [Item example](#item-example)
+- [Collection example](#collection-example)
 
 ### Item example
 
@@ -63,7 +68,7 @@ $item = $fractal->item($product, $transformer)->toArray();
 
 ### Collection example
 
-Transform and paginate a collection using a cursor can be achieved as follows:
+Transforming and paginating a collection using a cursor can be achieved as follows:
 
 ``` php
 <?php
@@ -108,7 +113,10 @@ $transformer = function (array $product) {
 
 $cursor = new \League\Fractal\Pagination\Cursor(null, null, 2, 3);
 
-$collection = $fractal->collection([$products[0], $products[1]], $transformer)->setCursor($cursor)->toArray();
+$collection = $fractal->collection([
+    $products[0],
+    $products[1],
+], $transformer)->setCursor($cursor)->toArray();
 ```
 
 ## Testing
