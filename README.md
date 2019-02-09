@@ -58,7 +58,7 @@ $product = [
     'gender' => 'm',
 ];
 
-$transformer = function (array $product) {
+$transformer = function (array $product): array {
     return [
         'id' => (int)$product['id'],
         'name' => $product['name'],
@@ -141,7 +141,7 @@ $products = [
     ],
 ];
 
-$transformer = function (array $product) {
+$transformer = function (array $product): array {
     return [
         'id' => (int)$product['id'],
         'name' => $product['name'],
