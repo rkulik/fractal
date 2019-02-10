@@ -22,7 +22,7 @@ This package requires PHP 7.2 or higher.
 
 ## Install
 
-Via composer
+Via composer:
 
 ``` bash
 $ composer require rkulik/fractal
